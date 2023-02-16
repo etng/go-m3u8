@@ -564,6 +564,10 @@ func (p *MediaPlaylist) Encode() *bytes.Buffer {
 
 	head := p.head
 	count := p.count
+	infPrec := p.InfPrecision
+	if infPrec == 0 {
+		infPrec = 6
+	}
 	for i := uint(0); (i < p.winsize || p.winsize == 0) && count > 0; count-- {
 		seg = p.Segments[head]
 		head = (head + 1) % p.capacity
@@ -689,7 +693,7 @@ func (p *MediaPlaylist) Encode() *bytes.Buffer {
 				durationCache[seg.Duration] = strconv.FormatInt(int64(math.Ceil(seg.Duration)), 10)
 			} else {
 				// Wowza Mediaserver and some others prefer floats.
-				durationCache[seg.Duration] = strconv.FormatFloat(seg.Duration, 'f', 3, 32)
+				durationCache[seg.Duration] = strconv.FormatFloat(seg.Duration, 'f', infPrec, 32)
 			}
 			p.buf.WriteString(durationCache[seg.Duration])
 		}
